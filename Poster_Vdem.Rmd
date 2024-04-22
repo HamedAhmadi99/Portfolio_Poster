@@ -1,0 +1,235 @@
+---
+title: Election Integrity and Civic Engagement; A Global Study in 2023
+author:
+  - name: Hamed Ahmadi
+affiliation:
+    address: School of International Service, American University
+date: "2023-01-01"
+
+output: 
+  posterdown::posterdown_html:
+    self_contained: false
+bibliography: packages.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(gridExtra)
+library(knitr)
+library(kableExtra)
+library(stargazer)
+load("vdem_2023.RData")
+```
+
+# Introduction and Overview
+
+This study analyzes the relationship between electoral integrity and civic engagement in 179 countries using 2023 data from the Varieties of Democracy (V-Dem) project. It explores how fair elections correlate with citizen participation, providing insights that could influence democratic policies and strengthen global governance. The findings highlight the importance of electoral fairness in enhancing civic involvement.
+
+**Main Question:**
+What is the correlation between electoral integrity and civic participation in 2023?
+
+**Hypothesis:**
+We hypothesize a positive correlation, indicating that higher electoral integrity may be associated with increased civic engagement.
+
+# Variable Descriptions
+
+## **Clean Elections Index (CEI)**
+
+**Purpose:** This index evaluates the extent to which elections are conducted without fraud, coercion, or irregularities, ensuring that they are free and fair.
+
+**Relevance:** A high score on this index indicates robust electoral processes, which are essential for legitimate governance.
+
+**Scale:** The index ranges from 0 (least clean) to 1 (most clean).
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=7, out.width='90%', fig.align='center'}
+
+hist_clean_elections_2023 <- ggplot(vdem_2023, aes(x = v2xel_frefair)) +
+  geom_histogram(
+    binwidth = 0.05,  
+    fill = "#e41a1c", 
+    color = "black"
+  ) +
+  geom_vline(
+    aes(xintercept = mean(v2xel_frefair, na.rm = TRUE)),  
+    color = "blue",
+    linetype = "dashed",
+    size = 1.5 
+  ) +
+  labs(
+    x = "CEI Score",
+    y = "Frequency"
+  ) +
+ theme_minimal(base_size = 18) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 24),  
+    axis.title = element_text(face = "bold", size = 22),  
+    axis.text = element_text(size = 20),  
+    legend.title = element_text(size = 20),  
+    legend.text = element_text(size = 18),  
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "black", fill=NA, size = 1.5)  
+  )
+
+
+print(hist_clean_elections_2023)
+
+
+selected_elec <- vdem_2023 %>%
+  select(country_name, v2xel_frefair)
+
+
+top_countries_frefair <- selected_elec %>%
+  arrange(desc(v2xel_frefair)) %>%
+  slice_head(n = 3)
+
+
+bottom_countries_frefair <- selected_elec %>%
+  arrange(v2xel_frefair) %>%
+  slice_head(n = 3)
+
+
+combined_table_frefair <- bind_rows(top_countries_frefair, bottom_countries_frefair)
+
+
+kable(combined_table_frefair, caption = "Top and Bottom Countries by Clean Election Index", format = "html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) 
+```
+
+## **Participatory Democracy Index (PDI)**
+
+**Purpose:** This index measures the level of active participation by citizens in both electoral and non-electoral democratic processes.
+
+**Relevance:** It reflects the extent to which democracies embrace direct involvement of citizens in governance, beyond traditional voting mechanisms.
+
+**Scale:** The index ranges from 0 (low participation) to 1 (high participation).
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=7, out.width='90%', fig.align='center'}
+
+
+hist_participation_2023 <- ggplot(vdem_2023, aes(x = v2x_partipdem)) +
+  geom_histogram(
+    binwidth = 0.05,
+    fill = "#377eb8",
+    color = "black"
+  ) +
+  geom_vline(
+    aes(xintercept = mean(v2x_partipdem, na.rm = TRUE)),
+    color = "red",
+    linetype = "dashed",
+    size = 1.5  
+  ) +
+  labs(
+    x = "PDI Score",
+    y = "Frequency"
+  ) +
+  theme_minimal(base_size = 18) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 24),  
+    axis.title = element_text(face = "bold", size = 22),  
+    axis.text = element_text(size = 20),
+    legend.title = element_text(size = 20),  
+    legend.text = element_text(size = 18), 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "black", fill=NA, size = 1.5)  
+  )
+
+
+hist_participation_2023
+
+
+
+selected_par <- vdem_2023 %>%
+  select(country_name, v2x_partipdem)
+
+
+top_countries <- selected_par %>%
+  arrange(desc(v2x_partipdem)) %>%
+  slice_head(n = 3)
+
+
+bottom_countries <- selected_par %>%
+  arrange(v2x_partipdem) %>%
+  slice_head(n = 3)
+
+
+combined_table <- bind_rows(top_countries, bottom_countries)
+
+
+
+kable(combined_table, caption = "Top and Bottom Countries by Participatory Democracy Index") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+  column_spec(1, bold = TRUE) 
+```
+# Methods
+
+The study utilizes 2023 data from the V-Dem dataset, employing linear regression analysis to investigate correlations between the Clean Elections Index and the Participatory Democracy Index.
+
+# Statistical Results and Findings
+
+The regression analysis reveals a clear and positive association between election integrity and citizen participation in democracy. An increase in the Clean Elections Index, indicating reduced electoral fraud and increased fairness, correlates with a rise in the Participatory Democracy Index, reflecting heightened citizen involvement in political activities. The positive and statistically significant coefficient for the Clean Elections Index underscores that transparent elections can stimulate greater democratic engagement. With 80% of the variation in citizen participation accounted for by this model, the robust relationship between electoral integrity and participatory democracy is evident. This underscores the vital role of election integrity in nurturing a democratic culture where citizens perceive their involvement in the democratic process as meaningful. It emphasizes the necessity for policymakers and electoral governance stakeholders to prioritize measures that bolster electoral integrity, as it can substantially amplify democratic engagement. However, the study's limitations include the absence of controls for other variables that could influence this relationship.
+
+```{r echo=FALSE, results='asis'}
+
+regression_model_2023 <- lm(v2x_partipdem ~ v2xel_frefair, data = vdem_2023)
+
+
+stargazer(regression_model_2023, type = "html", title = "Regression Analysis Results",
+          dep.var.labels = c("Electoral Participation Index"),
+          covariate.labels = c("Clean Elections Index"),
+          single.row = TRUE,
+          header = TRUE,
+          initial.zero = FALSE,
+          digits = 3,
+          intercept.bottom = FALSE,
+          intercept.top = TRUE,
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          notes.append = FALSE,
+          model.numbers = FALSE,
+          keep.stat = c("n", "rsq", "adj.rsq"))
+```
+
+
+```{r standard-plot, out.width='90%', fig.align='center', fig.height=6, echo = FALSE, warning = FALSE, message = FALSE}
+ scatter_plot_2023 <- ggplot(vdem_2023, aes(x = v2xel_frefair, y = v2x_partipdem)) +
+  geom_point( 
+    color = "#800080", 
+    alpha = 0.6, 
+    size = 3 
+  ) +
+  geom_smooth( 
+    method = "lm",
+    se = FALSE,
+    color = "#FFA500", 
+    linewidth = 2 
+  ) +
+  labs(
+    x = "Clean Elections Index (0-1 Scale)",
+    y = "Electoral Participation Rate (0-1 Scale)",
+    caption = "Data source: V-Dem"
+  ) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16), 
+    axis.title = element_text(face = "bold", size = 14), 
+    axis.text = element_text(size = 12), 
+    legend.position = "none", 
+    plot.caption = element_text(size = 10, hjust = 0), 
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    panel.border = element_rect(colour = "black", fill=NA, linewidth=1)
+  )
+
+scatter_plot_2023
+```
+
+
+# Acknowledgements
+We express our sincere gratitude to the V-Dem Project and the V-Dem Institute for their invaluable data contributions to this study.
+
+# Reference
+- V-Dem Codebook (https://v-dem.net/data/the-v-dem-dataset/)
