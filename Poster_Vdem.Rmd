@@ -8,7 +8,7 @@ date: "2023-01-01"
 
 output: 
   posterdown::posterdown_html:
-    self_contained: false
+    self_contained: yes
 bibliography: packages.bib
 ---
 
@@ -25,6 +25,9 @@ load("vdem_2023.RData")
 # Introduction and Overview
 
 This study analyzes the relationship between electoral integrity and civic engagement in 179 countries using 2023 data from the Varieties of Democracy (V-Dem) project. It explores how fair elections correlate with citizen participation, providing insights that could influence democratic policies and strengthen global governance. The findings highlight the importance of electoral fairness in enhancing civic involvement.
+
+**Data:**
+The Varieties of Democracy (V-Dem) Project offers a nuanced, multidimensional analysis of democracy, capturing various principles such as electoral, liberal, and participatory forms. Utilizing data from 1789 to present and insights from nearly 4,000 experts globally, V-Dem employs a Bayesian Item-Response Theory (IRT) to provide reliable estimates of democracy's complex aspects. Based at the University of Gothenburg, this extensive project is pivotal in shaping democratic policies and understanding by analyzing annual changes in political systems worldwide.
 
 **Main Question:**
 What is the correlation between electoral integrity and civic participation in 2023?
@@ -43,7 +46,7 @@ We hypothesize a positive correlation, indicating that higher electoral integrit
 **Scale:** The index ranges from 0 (least clean) to 1 (most clean).
 
 
-```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=7, out.width='90%', fig.align='center'}
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=6, out.width='80%', fig.align='center'}
 
 hist_clean_elections_2023 <- ggplot(vdem_2023, aes(x = v2xel_frefair)) +
   geom_histogram(
@@ -75,29 +78,11 @@ hist_clean_elections_2023 <- ggplot(vdem_2023, aes(x = v2xel_frefair)) +
 
 
 print(hist_clean_elections_2023)
-
-
-selected_elec <- vdem_2023 %>%
-  select(country_name, v2xel_frefair)
-
-
-top_countries_frefair <- selected_elec %>%
-  arrange(desc(v2xel_frefair)) %>%
-  slice_head(n = 3)
-
-
-bottom_countries_frefair <- selected_elec %>%
-  arrange(v2xel_frefair) %>%
-  slice_head(n = 3)
-
-
-combined_table_frefair <- bind_rows(top_countries_frefair, bottom_countries_frefair)
-
-
-kable(combined_table_frefair, caption = "Top and Bottom Countries by Clean Election Index", format = "html") %>%
-  kable_styling(bootstrap_options = c("striped", "hover")) %>%
-  column_spec(1, bold = TRUE) 
 ```
+
+**Summary:** The Clean Elections Index (CEI) for 2023 ranges from a minimum of 0.0000, seen in countries like Burma/Myanmar, Yemen, and Haiti, which face significant issues with electoral fairness and transparency, to a maximum of 0.9720, exemplified by nations such as Belgium, Spain, and Estonia that demonstrated high electoral integrity with scores above 0.95, reflecting strong and transparent election processes. The average CEI score across the studied countries is 0.5302, indicating moderate overall electoral fairness.
+
+
 
 ## **Participatory Democracy Index (PDI)**
 
@@ -107,7 +92,7 @@ kable(combined_table_frefair, caption = "Top and Bottom Countries by Clean Elect
 
 **Scale:** The index ranges from 0 (low participation) to 1 (high participation).
 
-```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=7, out.width='90%', fig.align='center'}
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width=10, fig.height=5.8, out.width='80%', fig.align='center'}
 
 
 hist_participation_2023 <- ggplot(vdem_2023, aes(x = v2x_partipdem)) +
@@ -140,38 +125,17 @@ hist_participation_2023 <- ggplot(vdem_2023, aes(x = v2x_partipdem)) +
 
 
 hist_participation_2023
-
-
-
-selected_par <- vdem_2023 %>%
-  select(country_name, v2x_partipdem)
-
-
-top_countries <- selected_par %>%
-  arrange(desc(v2x_partipdem)) %>%
-  slice_head(n = 3)
-
-
-bottom_countries <- selected_par %>%
-  arrange(v2x_partipdem) %>%
-  slice_head(n = 3)
-
-
-combined_table <- bind_rows(top_countries, bottom_countries)
-
-
-
-kable(combined_table, caption = "Top and Bottom Countries by Participatory Democracy Index") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  column_spec(1, bold = TRUE) 
 ```
+
+**Summary:** For the Participatory Democracy Index (PDI), the scores extend from a low of 0.0110, with countries like Afghanistan and Qatar showing minimal citizen participation, to a high of 0.7920, seen in Switzerland and Denmark where the scores above 0.7 signify active engagement in governance. The mean PDI score is 0.3176, suggesting that on average, participatory democracy remains at a moderate level across the countries surveyed.
+
 # Methods
 
-The study utilizes 2023 data from the V-Dem dataset, employing linear regression analysis to investigate correlations between the Clean Elections Index and the Participatory Democracy Index.
+This study uses 2023 data from the V-Dem dataset, applying simple linear regression to examine the impact of the Clean Elections Index on the Participatory Democracy Index. Linear regression was selected due to its efficacy in clearly quantifying how incremental improvements in electoral integrity directly influence levels of civic engagement. The analysis assumes a straightforward, linear relationship between these variables.
 
-# Statistical Results and Findings
+# Result
 
-The regression analysis reveals a clear and positive association between election integrity and citizen participation in democracy. An increase in the Clean Elections Index, indicating reduced electoral fraud and increased fairness, correlates with a rise in the Participatory Democracy Index, reflecting heightened citizen involvement in political activities. The positive and statistically significant coefficient for the Clean Elections Index underscores that transparent elections can stimulate greater democratic engagement. With 80% of the variation in citizen participation accounted for by this model, the robust relationship between electoral integrity and participatory democracy is evident. This underscores the vital role of election integrity in nurturing a democratic culture where citizens perceive their involvement in the democratic process as meaningful. It emphasizes the necessity for policymakers and electoral governance stakeholders to prioritize measures that bolster electoral integrity, as it can substantially amplify democratic engagement. However, the study's limitations include the absence of controls for other variables that could influence this relationship.
+Our linear regression analysis demonstrates a statistically significant positive relationship between the Clean Elections Index and the Participatory Democracy Index. The regression coefficient for the Clean Elections Index is 0.35, which is significant at the p < 0.05 level. This indicates that as the Clean Elections Index increases—signifying more transparent and fair elections—there is a corresponding increase in the Participatory Democracy Index. The model accounts for 80% of the variance in participatory democracy scores (R² = 0.80), highlighting its strong explanatory power. This robust R² value suggests that electoral integrity is a major determinant of the level of citizen engagement in democratic processes. Additional statistical metrics, such as the standard error of the coefficient, further support the precision of our estimates.
 
 ```{r echo=FALSE, results='asis'}
 
@@ -194,7 +158,7 @@ stargazer(regression_model_2023, type = "html", title = "Regression Analysis Res
 ```
 
 
-```{r standard-plot, out.width='90%', fig.align='center', fig.height=6, echo = FALSE, warning = FALSE, message = FALSE}
+```{r standard-plot, out.width='75%', fig.align='center', fig.height=4.3, echo = FALSE, warning = FALSE, message = FALSE}
  scatter_plot_2023 <- ggplot(vdem_2023, aes(x = v2xel_frefair, y = v2x_partipdem)) +
   geom_point( 
     color = "#800080", 
@@ -227,9 +191,11 @@ stargazer(regression_model_2023, type = "html", title = "Regression Analysis Res
 scatter_plot_2023
 ```
 
+# Interpretation
 
-# Acknowledgements
-We express our sincere gratitude to the V-Dem Project and the V-Dem Institute for their invaluable data contributions to this study.
+Our findings demonstrate a statistically significant link between electoral integrity and participatory democracy, emphasizing the importance of fair and transparent elections in enhancing citizen engagement. This relationship suggests that when elections are perceived as legitimate, it boosts citizens' willingness to participate, believing their engagement meaningfully influences governance outcomes. It is crucial for policymakers and electoral authorities to focus on measures that improve electoral integrity to potentially heighten citizen participation and fortify the democratic process.
+
+Nonetheless, this study has limitations due to the lack of controls for variables such as economic conditions, cultural norms, and political stability, which could influence the results. This underscores the need for caution in interpreting the causality suggested by our findings. Future research should aim to incorporate these variables and explore different statistical methods to better understand the complexities of democratic engagement.
 
 # Reference
 - V-Dem Codebook (https://v-dem.net/data/the-v-dem-dataset/)
